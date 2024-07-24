@@ -1,0 +1,38 @@
+Set 1
+1. Create a pod named `nginx-pod` with the image `nginx:latest`.
+2. Create a deployment named `webapp-deployment` with 3 replicas, using the image `nginx:1.16`.
+3. Expose the deployment `webapp-deployment` as a service named `webapp-service` on port 80.
+4. Create a ConfigMap named `app-config` with a key `APP_ENV` and value `production`.
+5. Create a pod named `configmap-pod` that uses the `app-config` ConfigMap. The environment variable `APP_ENV` should be set from the ConfigMap.
+
+------------------
+Set 2
+6. Create a secret named `db-secret` with keys `username` (value: `admin`) and `password` (value: `P@ssw0rd`).
+7. Create a pod named `secret-pod` that uses the `db-secret` Secret. The environment variables `DB_USER` and `DB_PASS` should be set from the Secret.
+8. Create a PersistentVolume named `pv-data` with a capacity of `1Gi`, access mode `ReadWriteOnce`, and hostPath `/mnt/data`.
+9. Create a PersistentVolumeClaim named `pvc-data` requesting `1Gi` of storage with access mode `ReadWriteOnce`.
+10. Create a pod named `pvc-pod` that mounts the `pvc-data` PersistentVolumeClaim at `/data`.
+
+------------------
+Set 3
+11. Create a job named `batch-job` that runs the image `busybox` and executes the command `echo "Hello Kubernetes"`.
+12. Create a CronJob named `daily-job` that runs the image `busybox` and executes the command `date` every day at midnight.
+13. Create an Ingress resource named `webapp-ingress` to expose the `webapp-service` on the path `/webapp`.
+14. Create a pod named `resource-limits-pod` using the image `nginx:latest` with CPU limit `500m` and memory limit `256Mi`.
+15. Create a namespace named `dev-environment`.
+
+------------------
+Set 4
+16. Deploy a pod named `dev-nginx` in the `dev-environment` namespace using the image `nginx:latest`.
+17. Scale the deployment `webapp-deployment` to 5 replicas.
+18. Perform a rolling update on the `webapp-deployment` to update the image to `nginx:1.17`.
+19. Create a NetworkPolicy named `deny-all` in the `default` namespace that denies all ingress traffic to pods.
+20. Create a service account named `app-sa` and assign it to a pod named `sa-pod` using the image `nginx:latest`.
+
+Set 5
+------------------
+21. Create a DaemonSet named `log-collector` that runs the image `fluentd` on all nodes.
+22. Create a Horizontal Pod Autoscaler (HPA) for the deployment `webapp-deployment` that scales between 2 and 10 replicas based on CPU usage, targeting 50% CPU utilization.
+23. Create a pod named `liveness-pod` using the image `nginx:latest` with a liveness probe that checks the path `/healthz` on port 80.
+24. Create a pod named `readiness-pod` using the image `nginx:latest` with a readiness probe that checks the path `/ready` on port 80.
+25. Update the deployment `webapp-deployment` to use the image `nginx:1.18` using a `kubectl patch` command.

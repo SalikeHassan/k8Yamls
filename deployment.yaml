@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp-container
+        image: nginx:latest
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-service
+spec:
+  selector:
+    app: myapp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+
+# Create a Deployment
+# Creates a new Deployment with the specified image.
+kubectl create deployment myapp-deployment --image=nginx:latest
+
+# Apply a Deployment Configuration
+# Applies a configuration file to create or update a Deployment.
+kubectl apply -f deployment.yaml
+
+# Get Information About Deployments
+# Lists all Deployments in the current namespace.
+kubectl get deployments
+
+# Describe a Deployment
+# Provides detailed information about a specific Deployment.
+kubectl describe deployment myapp-deployment
+
+# Scale a Deployment
+# Changes the number of replicas managed by the Deployment.
+kubectl scale deployment myapp-deployment --replicas=5
+
+# Update the Image of a Deployment
+# Updates the container image used by the Deployment.
+kubectl set image deployment/myapp-deployment myapp-container=nginx:1.19.1
+
+# Edit a Deployment
+# Opens the Deployment configuration in an editor for modification.
+kubectl edit deployment myapp-deployment
+
+# Roll Out a Deployment
+# Displays the status of a rollout of the Deployment.
+kubectl rollout status deployment/myapp-deployment
+
+# Undo a Deployment Rollout
+# Rolls back the Deployment to a previous revision.
+kubectl rollout undo deployment/myapp-deployment
+
+# Pause a Deployment Rollout
+# Pauses the rollout of a Deployment.
+kubectl rollout pause deployment/myapp-deployment
+
+# Resume a Deployment Rollout
+# Resumes a paused rollout of a Deployment.
+kubectl rollout resume deployment/myapp-deployment
+
+# Restart a Deployment
+# Restarts the Deployment, rolling out a fresh set of pods.
+kubectl rollout restart deployment/myapp-deployment
+
+# Delete a Deployment
+# Deletes the specified Deployment.
+kubectl delete deployment myapp-deployment
+
+# Get Deployment History
+# Displays the rollout history of a Deployment.
+kubectl rollout history deployment/myapp-deployment
+
+# Get a Specific Revision of a Deployment History
+# Shows details for a specific revision.
+kubectl rollout history deployment/myapp-deployment --revision=2
+
+# Autoscale a Deployment
+# Automatically scales the Deployment based on CPU utilization.
+kubectl autoscale deployment myapp-deployment --min=2 --max=10 --cpu-percent=80

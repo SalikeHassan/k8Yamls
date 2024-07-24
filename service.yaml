@@ -1,0 +1,196 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  labels:
+    app: nginx
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+
+# ClusterIP Service
+
+# A ClusterIP service is the default type of service which exposes the service on a cluster-internal IP.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod-1
+  labels:
+    app: myapp
+spec:
+  containers:
+  - name: myapp-container
+    image: nginx:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod-2
+  labels:
+    app: myapp
+spec:
+  containers:
+  - name: myapp-container
+    image: nginx:latest
+
+# ClusterIP Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-clusterip-service
+spec:
+  selector:
+    app: myapp
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: ClusterIP
+
+#NodePort Service
+
+# A NodePort service exposes the service on each Node’s IP at a static port (the NodePort).
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod-1
+  labels:
+    app: myapp
+spec:
+  containers:
+  - name: myapp-container
+    image: nginx:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod-2
+  labels:
+    app: myapp
+spec:
+  containers:
+  - name: myapp-container
+    image: nginx:latest
+
+# NodePort Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-nodeport-service
+spec:
+  selector:
+    app: myapp
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+    nodePort: 30036
+  type: NodePort
+
+# LoadBalancer Service
+# A LoadBalancer service exposes the service externally using a cloud provider’s load balancer.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod-1
+  labels:
+    app: myapp
+spec:
+  containers:
+  - name: myapp-container
+    image: nginx:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod-2
+  labels:
+    app: myapp
+spec:
+  containers:
+  - name: myapp-container
+    image: nginx:latest
+
+# LoadBalancer Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-loadbalancer-service
+spec:
+  selector:
+    app: myapp
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
+
+# ExternalName Service
+
+# An ExternalName service maps a service to the contents of the externalName field (e.g., a DNS name).
+
+# ExternalName Service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-externalname-service
+spec:
+  type: ExternalName
+  externalName: myapp.external.com
+
+# Headless Service
+
+# A Headless service can be used for discovering pods without a ClusterIP. Useful for StatefulSets and other types of workloads that require direct pod-to-pod communication.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod-1
+  labels:
+    app: myapp
+spec:
+  hostname: myapp-pod-1
+  subdomain: myapp-headless
+  containers:
+  - name: myapp-container
+    image: nginx:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod-2
+  labels:
+    app: myapp
+spec:
+  hostname: myapp-pod-2
+  subdomain: myapp-headless
+  containers:
+  - name: myapp-container
+    image: nginx:latest
+
+# Headless Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-headless-service
+spec:
+  selector:
+    app: myapp
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+
+# •	ClusterIP Service: Exposes the service on a cluster-internal IP.
+# •	NodePort Service: Exposes the service on each Node’s IP at a static port.
+# •	LoadBalancer Service: Exposes the service externally using a cloud provider’s load balancer.
+# •	ExternalName Service: Maps a service to a DNS name.
+# •	Headless Service: Enables direct pod-to-pod communication without a ClusterIP.

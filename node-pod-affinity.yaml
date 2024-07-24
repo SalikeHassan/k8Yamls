@@ -1,0 +1,102 @@
+# Taints and Tolerations
+  # Taints are applied to nodes, and tolerations are applied to pods. Taints prevent pods from being scheduled on certain nodes unless the pod tolerates the taint.
+
+#Command to Taint a Node
+kubectl taint nodes node1 key=value:NoSchedule
+
+#Pod Tolerating the Taint
+apiVersion: v1
+kind: Pod
+metadata:
+  name: toleration-pod
+spec:
+  tolerations:
+  - key: "key"
+    operator: "Equal"
+    value: "value"
+    effect: "NoSchedule"
+  containers:
+  - name: myapp-container
+    image: nginx:latest
+
+# Node Selector
+# Node Selectors constrain a pod to be scheduled on nodes that match certain labels.
+
+# Command to Label a Node
+kubectl label nodes node1 disktype=ssd
+
+#Pod Using Node Selector
+apiVersion: v1
+kind: Pod
+metadata:
+  name: node-selector-pod
+spec:
+  nodeSelector:
+    disktype: ssd
+  containers:
+  - name: myapp-container
+    image: nginx:latest
+
+# Node Affinity
+# Node Affinity offers more expressive ways to constrain pods to nodes compared to node selectors.
+
+# Pod Using Node Affinity
+apiVersion: v1
+kind: Pod
+metadata:
+  name: node-affinity-pod
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: disktype
+            operator: In
+            values:
+            - ssd
+  containers:
+  - name: myapp-container
+    image: nginx:latest
+
+
+# Combined Example
+
+# Here is a combined example incorporating taints, tolerations, node selectors, and node affinity.
+
+# Command to Taint a Node
+kubectl taint nodes node1 key=value:NoSchedule
+
+# Command to Label a Node
+kubectl label nodes node1 disktype=ssd
+
+# Pod Using Tolerations, Node Selector, and Node Affinity
+apiVersion: v1
+kind: Pod
+metadata:
+  name: combined-pod
+spec:
+  tolerations:
+  - key: "key"
+    operator: "Equal"
+    value: "value"
+    effect: "NoSchedule"
+  nodeSelector:
+    disktype: ssd
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: disktype
+            operator: In
+            values:
+            - ssd
+  containers:
+  - name: myapp-container
+    image: nginx:latest
+
+
+# •	Taints and Tolerations: The node node1 is tainted with key=value:NoSchedule. The pod combined-pod has a toleration for this taint, allowing it to be scheduled on node1.
+# •	Node Selector: The pod combined-pod specifies a node selector that matches the label disktype=ssd. This ensures the pod is only scheduled on nodes with this label.
+# •	Node Affinity: The pod combined-pod also specifies node affinity rules that match the label disktype=ssd. Node affinity provides more complex scheduling rules than node selectors.

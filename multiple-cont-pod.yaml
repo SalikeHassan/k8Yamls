@@ -1,0 +1,41 @@
+# Config map
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  log_level: debug
+  max_connections: "100"
+
+# Secrets
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-credentials
+type: Opaque
+data:
+  app-username: YXBwdXNlcg==  # base64 encoded value for 'appuser'
+  app-password: cGFzc3dvcmQxMjM=  # base64 encoded value for 'password123'
+
+# Pod
+apiVersion: v1
+kind: Pod
+metadata:
+  name: multi-container-pod
+spec:
+  containers:
+  - name: sqlserver
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    env:
+      - name: SA_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: app-credentials
+            key: app-username
+      - name: SA_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: app-credentials
+            key: app-password
+  - name: application
+    image: myapp:latest

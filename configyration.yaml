@@ -1,0 +1,78 @@
+# Config Map
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sqlserver-config
+data:
+  sqlserver.properties: |
+    max_connections=100
+    shared_buffers=256MB
+  sqlserver.special.how: very
+  sqlserver.special.type: secure
+# Secrets
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sqlserver-credentials
+type: Opaque
+data:
+  sqlserver-username: c3FsYWRtaW4=  # base64 encoded value for 'sqladmin'
+  sqlserver-password: c3FsMTIzNDU=  # base64 encoded value for 'sql12345'
+
+# Pod
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sqlserver-pod
+spec:
+  containers:
+  - name: sqlserver
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    envFrom:
+      - configMapRef:
+          name: sqlserver-config
+      - secretRef:
+          name: sqlserver-credentials
+    env:
+      - name: SQLSERVER_SPECIAL_LEVEL
+        valueFrom:
+          configMapKeyRef:
+            name: sqlserver-config
+            key: sqlserver.special.how
+      - name: SQLSERVER_SPECIAL_TYPE
+        valueFrom:
+          configMapKeyRef:
+            name: sqlserver-config
+            key: sqlserver.special.type
+      - name: SA_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: sqlserver-credentials
+            key: sqlserver-username
+      - name: SA_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: sqlserver-credentials
+            key: sqlserver-password
+    volumeMounts:
+    - name: config-volume
+      mountPath: /etc/sqlserver/config
+    - name: credentials-volume
+      mountPath: /etc/sqlserver/credentials
+  volumes:
+  - name: config-volume
+    configMap:
+      name: sqlserver-config
+  - name: credentials-volume
+    secret:
+      secretName: sqlserver-credentials
+
+
+# 1.	ConfigMap Usage:
+# 	•	Environment Variables from ConfigMap: Using envFrom to inject all key-value pairs from the ConfigMap as environment variables.
+# 	•	Individual Environment Variables from ConfigMap: Using env with configMapKeyRef to inject specific keys as environment variables.
+# 	•	Volume Mount from ConfigMap: Mounting the entire ConfigMap as a volume at /etc/sqlserver/config.
+# 2.	Secret Usage:
+# 	•	Environment Variables from Secret: Using envFrom to inject all key-value pairs from the Secret as environment variables.
+# 	•	Individual Environment Variables from Secret: Using env with secretKeyRef to inject specific keys as environment variables.
+# 	•	Volume Mount from Secret: Mounting the entire Secret as a volume at /etc/sqlserver/credentials.

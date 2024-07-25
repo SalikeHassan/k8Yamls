@@ -194,3 +194,55 @@ spec:
 # •	LoadBalancer Service: Exposes the service externally using a cloud provider’s load balancer.
 # •	ExternalName Service: Maps a service to a DNS name.
 # •	Headless Service: Enables direct pod-to-pod communication without a ClusterIP.
+
+
+# In a Kubernetes Service, the port and targetPort fields have specific roles:
+
+# 	1.	port: This is the port on which the Service itself will be exposed. When you access the Service, you use this port.
+# 	2.	targetPort: This is the port on the container that the traffic should be directed to. If targetPort is not specified, it defaults to the value of port.
+
+# Here’s a brief explanation of how they work together:
+
+# 	•	port: The port that the Service listens on.
+# 	•	targetPort: The port on the container that the traffic from the Service should be directed to.
+
+# For example, if you have a Service with port set to 80 and targetPort set to 8080, the Service will listen on port 80, but it will forward traffic to port 8080 on the container.
+
+# In your specific case, if the container’s nginx server is listening on port 80 (which is the default for nginx), then having just port set to 80 in the Service should work fine, as targetPort will default to the same value.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+        - name: ng
+          image: nginx:1.16
+          resources:
+            requests:
+              memory: "250Mi"
+              cpu: "250m"
+            limits:
+              memory: "250Mi"
+              cpu: "250m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-service
+spec:
+  selector:
+    app: webapp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

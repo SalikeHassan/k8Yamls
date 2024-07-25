@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: webapp-deployment
+spec:
+ replicas: 3
+ selector:
+  matchLabels:
+   app: webapp
+ template:
+  metadata:
+   labels:
+    app: webapp
+  spec:
+   containers:
+    - name: ng
+      image: nginx:1.16
+      resources:
+       requests:
+        memory: "250Mi"
+        cpu: "250m"
+       limits:
+        memory: "250Mi"
+        cpu: "250m"

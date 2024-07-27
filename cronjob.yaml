@@ -1,0 +1,236 @@
+# A basic CronJob that runs a job every minute.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: basic-cronjob
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: myapp-container
+            image: busybox
+            args:
+            - /bin/sh
+            - -c
+            - date; echo Hello from the Kubernetes CronJob
+          restartPolicy: OnFailure
+
+# A CronJob that runs a job every hour and uses environment variables.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: env-cronjob
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: myapp-container
+            image: busybox
+            env:
+            - name: MY_ENV
+              value: "Hello from env-cronjob"
+            args:
+            - /bin/sh
+            - -c
+            - date; echo $MY_ENV
+          restartPolicy: OnFailure
+# A CronJob that runs a job daily and specifies resource limits.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: resource-cronjob
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: myapp-container
+            image: busybox
+            resources:
+              limits:
+                memory: "128Mi"
+                cpu: "500m"
+              requests:
+                memory: "64Mi"
+                cpu: "250m"
+            args:
+            - /bin/sh
+            - -c
+            - date; echo Hello from resource-cronjob
+          restartPolicy: OnFailure
+# A CronJob that runs every 5 minutes and specifies parallelism and concurrency policy.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: parallel-cronjob
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: "Allow" # Can be "Forbid" or "Replace"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      parallelism: 2
+      completions: 2
+      template:
+        spec:
+          containers:
+          - name: myapp-container
+            image: busybox
+            args:
+            - /bin/sh
+            - -c
+            - date; echo Hello from parallel-cronjob
+          restartPolicy: OnFailure
+# A CronJob that is suspended (won’t run jobs until unsuspended).
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: suspended-cronjob
+spec:
+  schedule: "0 0 * * *"
+  suspend: true
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: myapp-container
+            image: busybox
+            args:
+            - /bin/sh
+            - -c
+            - date; echo Hello from suspended-cronjob
+          restartPolicy: OnFailure
+
+# Commands
+# Create a CronJob
+kubectl apply -f cronjob.yaml
+
+# Get Information About CronJobs
+kubectl get cronjobs
+kubectl get jobs
+
+# Describe a CronJob
+kubectl describe cronjob basic-cronjob
+
+# Suspend a CronJob
+kubectl patch cronjob basic-cronjob -p '{"spec" : {"suspend" : true }}'
+ 
+# Unsuspend a CronJob
+kubectl patch cronjob basic-cronjob -p '{"spec" : {"suspend" : false }}'
+
+# Delete a CronJob
+kubectl delete cronjob basic-cronjob
+
+# Format of Schedule
+* * * * *
+| | | | |
+| | | | +----- day of the week (0 - 7) (Sunday to Saturday; 7 is also Sunday on some systems)
+| | | +------- month (1 - 12)
+| | +--------- day of the month (1 - 31)
+| +----------- hour (0 - 23)
++------------- minute (0 - 59)
+
+# Every Minute
+* * * * *
+
+# Every Hour
+0 * * * *
+
+# Every Day at Midnight
+0 0 * * *
+
+# Every Day at Noon
+0 12 * * *
+
+# Every Sunday at Midnight
+0 0 * * 0
+
+# Every 5 Minutes
+*/5 * * * *
+
+# Every 2 Hours
+0 */2 * * *
+
+# Every Weekday at 1 AM
+0 1 * * 1-5
+
+# Detailed Explanation of Fields
+
+	•	Minute: Specifies the minute of the hour that the job should run. Valid values are from 0 to 59.
+	•	Hour: Specifies the hour of the day that the job should run. Valid values are from 0 to 23.
+	•	Day of Month: Specifies the day of the month that the job should run. Valid values are from 1 to 31.
+	•	Month: Specifies the month that the job should run. Valid values are from 1 to 12.
+	•	Day of Week: Specifies the day of the week that the job should run. Valid values are from 0 to 7 where both 0 and 7 represent Sunday.
+
+# Special Characters
+
+	•	* (asterisk): Matches all values.
+	•	/ (slash): Specifies increments. For example, */5 in the minute field means “every 5 minutes”.
+	•	, (comma): Separates items of a list. For example, 1,2,5 in the day of the week field means “Monday, Tuesday, and Friday”.
+	•	- (dash): Specifies a range of values. For example, 1-5 in the day of the week field means “Monday through Friday”.
+
+
+ Key Points about Kubernetes CronJobs
+
+	1.	Purpose:
+	•	Kubernetes CronJobs are used to run jobs on a scheduled basis, similar to the cron utility in Unix/Linux.
+	2.	Scheduling:
+	•	CronJobs use the standard cron format to define the schedule, specifying the minute, hour, day of the month, month, and day of the week.
+	3.	Components:
+	•	schedule: Defines when the job should run.
+	•	jobTemplate: Specifies the job that should be created and executed on the defined schedule.
+	4.	Concurrency Policies:
+	•	Allow: Allows CronJobs to run concurrently if the previous instance is still running.
+	•	Forbid: Prevents new CronJob instances from running if the previous instance is still running.
+	•	Replace: Cancels the currently running job and replaces it with a new one.
+	5.	History Limits:
+	•	successfulJobsHistoryLimit: Specifies how many completed jobs should be kept in history.
+	•	failedJobsHistoryLimit: Specifies how many failed jobs should be kept in history.
+	6.	Suspend:
+	•	CronJobs can be suspended by setting the suspend field to true. This prevents new jobs from being scheduled.
+	7.	Pod Template:
+	•	The jobTemplate contains the pod template, which defines the container(s) that will be run, resource limits, environment variables, and other pod-specific configurations.
+	8.	Resource Management:
+	•	CronJobs can specify resource requests and limits to ensure they have the necessary resources to run.
+	9.	Parallelism:
+	•	Jobs created by CronJobs can run with specified parallelism and completion requirements, managed through the jobTemplate spec.
+	10.	Use Cases:
+	•	Running periodic tasks such as backups, report generation, data processing, and other automated maintenance tasks.
+	11.	Commands:
+	•	Create: kubectl apply -f cronjob.yaml
+	•	View: kubectl get cronjobs
+	•	Describe: kubectl describe cronjob <cronjob-name>
+	•	Suspend: kubectl patch cronjob <cronjob-name> -p '{"spec" : {"suspend" : true }}'
+	•	Unsuspend: kubectl patch cronjob <cronjob-name> -p '{"spec" : {"suspend" : false }}'
+	•	Delete: kubectl delete cronjob <cronjob-name>
+	12.	Error Handling:
+	•	CronJobs handle retries and can be configured to retry jobs a specified number of times if they fail.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          
+          

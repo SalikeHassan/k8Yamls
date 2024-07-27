@@ -36,3 +36,43 @@ Set 5
 23. Create a pod named `liveness-pod` using the image `nginx:latest` with a liveness probe that checks the path `/healthz` on port 80.
 24. Create a pod named `readiness-pod` using the image `nginx:latest` with a readiness probe that checks the path `/ready` on port 80.
 25. Update the deployment `webapp-deployment` to use the image `nginx:1.18` using a `kubectl patch` command.
+
+Set 6
+------------------
+26. Create a deployment named `affinity-deployment` with 2 replicas using the image `nginx:latest` and configure pod affinity to ensure that pods are scheduled on nodes where the label `app=web` is present.
+27. Backup the ETCD database and restore it from the backup.
+28. Create a Role named `pod-reader` in the `default` namespace that allows reading pods, and bind this role to a user named `dev-user`.
+29. Create a Custom Resource Definition (CRD) named `crontabs.stable.example.com` with the version `v1`.
+30. Create a deployment named `anti-affinity-deployment` with 2 replicas using the image `nginx:latest` and configure pod anti-affinity to ensure that no two pods are scheduled on the same node.
+
+Set 7
+------------------
+31. Create a Service of Type LoadBalancer named `loadbalancer-service` to expose the deployment `webapp-deployment` on port 80.
+32. Create a Pod Disruption Budget (PDB) named `webapp-pdb` for the deployment `webapp-deployment` ensuring at least 1 pod is always available.
+33. Create a ReplicaSet named `webapp-replicaset` with 3 replicas using the image `nginx:1.16`.
+34. Create a pod named `custom-scheduler-pod` using the image `nginx:latest` and ensure it uses a custom scheduler named `my-scheduler`.
+35. Create a pod named `resource-pod` using the image `nginx:latest` with a CPU request of `100m` and limit of `200m`, and a memory request of `128Mi` and limit of `256Mi`.
+
+Set 8
+------------------
+36. Create a service named `custom-selector-service` on port 8080 that selects pods with the label `app=custom-app`.
+37. Create a RoleBinding named `pod-reader-binding` in the `default` namespace that binds the `pod-reader` role to the service account `default`.
+38. Create an ExternalName service named `external-service` that maps to `example.com`.
+39. Create a headless service named `headless-service` for the deployment `webapp-deployment`.
+40. Create a pod named `serviceaccount-pod` using the image `nginx:latest` and assign it to the service account `app-sa`.
+
+Set 9
+------------------
+41. Create a pod named `node-selector-pod` using the image `nginx:latest` and ensure it is scheduled on nodes with the label `disktype=ssd`.
+42. Create a pod named `init-container-pod` with an init container that uses the image `busybox` and copies a file from `/src` to `/dest`. The main container should use the image `nginx:latest`.
+43. Create a pod named `toleration-pod` using the image `nginx:latest` that tolerates nodes with the taint `key=value:NoSchedule`.
+44. Create a StatefulSet named `data-statefulset` with 3 replicas using the image `nginx:latest` and ensure each pod has a unique PersistentVolumeClaim using VolumeClaimTemplates.
+45. Create a pod named `secret-volume-pod` using the image `nginx:latest` and mount the secret `db-secret` as a volume at `/etc/secret`.
+
+Set 10
+------------------
+46. Implement Blue-Green Deployment for `webapp-deployment` where the green environment uses the image `nginx:1.17` and the blue environment uses `nginx:1.16`.
+47. Create a pod named `hostpath-pod` using the image `busybox` and mount a host path volume from `/mnt/data` on the host to `/data` in the container.
+48. Implement a RollingUpdate strategy for `rollingupdate-deployment` with 3 replicas using the image `nginx:latest` and configure the update strategy to have `maxSurge=1` and `maxUnavailable=1`.
+49. Create a Custom Resource Definition (CRD) named `widgets.example.com` and a custom resource named `my-widget` using this CRD.
+50. Create a pod named `logging-pod` using the image `busybox` that logs `Hello, Kubernetes!` every 5 seconds.

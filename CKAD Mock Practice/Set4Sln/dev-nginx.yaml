@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: dev-nginx
+ namespace: dev-environment
+ labels:
+  app: web
+spec:
+ replicas: 3
+ selector:
+  matchLabels:
+   app: webapp
+ template:
+  metadata:
+   name: webapp-pod
+   labels:
+    app: webapp
+  spec:
+   containers:
+    - name: web
+      image: nginx
+      resources:
+       limits:
+        memory: "250Mi"
+        cpu: "250m"

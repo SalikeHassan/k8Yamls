@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: rollout-dep
+ namespace: dev-environment
+spec:
+ replicas: 4
+ selector:
+  matchLabels:
+   app: alpine
+ template:
+  metadata:
+   name: alpine-pod
+   labels:
+    app: alpine
+  spec:
+   containers:
+   - name: alpine
+     image: alpinese
+     command: ["sh", "-c", "while true; do echo 'Version 5.0: Hello World'; sleep 5; done"]
+     resources:
+      limits:
+       memory: "250Mi"
+       cpu: "250m"

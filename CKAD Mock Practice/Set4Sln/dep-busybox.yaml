@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: dep2
+ namespace: dev-environment
+ labels:
+  app: web
+spec:
+ replicas: 3
+ selector:
+  matchLabels:
+   dev: webapp
+ template:
+  metadata:
+   name: busybox-pod
+   labels:
+    dev: webapp
+  spec:
+   containers:
+   - name: webapp
+     image: busybox
+     resources:
+      limits:
+       memory: "250Mi"
+       cpu: "250m"
+     ports:
+     - containerPort: 80

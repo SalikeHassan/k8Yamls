@@ -101,3 +101,22 @@ kubectl rollout history deployment/myapp-deployment --revision=2
 # Autoscale a Deployment
 # Automatically scales the Deployment based on CPU utilization.
 kubectl autoscale deployment myapp-deployment --min=2 --max=10 --cpu-percent=80
+
+# Rollback Deployment to specific version
+kubectl rollout undo deployment/redis-dep -n dev-environment --to-revision=1
+
+
+Restarting a deployment in Kubernetes is useful for various reasons, including applying changes that do not trigger an automatic rollout, resolving issues with running pods, or simply refreshing the application state. Here are some specific use cases and benefits of restarting a deployment:
+
+Use Cases for Restarting a Deployment
+
+	1.	Apply Non-Rolling Changes:
+	•	If you make changes to ConfigMaps, Secrets, or other resources that are used by the pods but do not directly modify the deployment specification, a restart ensures that the pods pick up the latest changes.
+	2.	Resolve Pod Issues:
+	•	Sometimes, pods may run into issues such as memory leaks, crashes, or other runtime problems. Restarting the deployment replaces the current pods with new ones, potentially resolving these issues.
+	3.	Refresh Application State:
+	•	Restarting can be used to refresh the application state, especially if it depends on external systems or services that have been updated or restarted.
+	4.	Debugging and Development:
+	•	During development and debugging, restarting the deployment can help ensure that changes are applied and the application runs with the latest configuration and code.
+	5.	Periodic Maintenance:
+	•	Periodic restarts can be part of a maintenance routine to ensure the application remains healthy and free from long-running issues that might accumulate over time.

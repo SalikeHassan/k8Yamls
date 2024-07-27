@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: my-namespace
+
+# Declarative command
+kubectl create namespace my-namespace
+
+# Set Default Namespace
+kubectl config set-context --current --namespace=my-namespace
+
+# Current Context: kubectl uses contexts to determine which cluster and user information to use for commands. The current context is the one that is actively being used for all kubectl commands.

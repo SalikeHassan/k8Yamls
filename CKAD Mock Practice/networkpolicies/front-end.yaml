@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+ name: frontend-pod
+ namespace: dev-environment
+ labels:
+  app: frontend
+spec:
+ containers:
+ - name: frontend
+   image: nginx
+   resources:
+    limits:
+     memory: "250Mi"
+     cpu: "250m"
+   ports:
+   - containerPort: 80

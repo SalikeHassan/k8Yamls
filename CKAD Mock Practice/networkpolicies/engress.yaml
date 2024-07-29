@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+ name: egress-webserver
+ namespace: dev-environment
+spec:
+ podSelector:
+  matchLabels:
+   app: server
+ policyTypes:
+ - Egress
+ egress:
+ - to:
+   - podSelector:
+      matchLabels:
+       app: frontend 

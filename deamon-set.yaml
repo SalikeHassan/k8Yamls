@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nginx-daemonset
+  labels:
+    app: nginx
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+
+
+# commands
+kubectl get daemonsets
+
+	# •	DaemonSet: Ensures a pod is running on all (or some) nodes in a cluster.
+	# •	Use Cases: Commonly used for logging, monitoring, or other node-specific tasks.
+	# •	Creation: Defined similarly to other controllers (e.g., Deployment), with a specific kind: DaemonSet.
+	# •	Management: Managed using standard kubectl commands for creating, viewing, describing, and deleting resources.

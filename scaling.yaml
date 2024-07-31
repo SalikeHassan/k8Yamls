@@ -1,0 +1,129 @@
+# Horizontal Scaling
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp
+        image: nginx:1.18
+        resources:
+          requests:
+            cpu: 100m
+          limits:
+            cpu: 200m
+
+--- HPA
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: webapp-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: webapp-deployment
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50
+
+# Command
+kubectl get hpa
+# Horizontal Pod Autoscaling (HPA):
+
+# 	•	Definition: Horizontal scaling involves adding more pod replicas to distribute the load. This is managed by the Horizontal Pod Autoscaler (HPA).
+# 	•	Use Case: When you need to handle increased load by adding more instances of your application.
+# 	•	Mechanism: HPA automatically adjusts the number of pod replicas in a deployment, replication controller, or replica set based on observed CPU utilization (or other select metrics).
+
+# Vertical Scaling
+	# Install VPA Components
+kubectl apply -f https://github.com/kubernetes/autoscaler/releases/download/vertical-pod-autoscaler-0.9.0/vpa-v0.9.0.yaml
+
+--- HPA yaml
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: webapp-vpa
+spec:
+  targetRef:
+    apiVersion: "apps/v1"
+    kind:       Deployment
+    name:       webapp-deployment
+  updatePolicy:
+    updateMode: "Auto"
+
+
+# Commamds
+kubectl get vpa
+
+# Vertical Pod Autoscaling (VPA):
+
+# 	•	Definition: Vertical scaling involves adjusting the resource requests and limits (CPU and memory) of individual pods. This is managed by the Vertical Pod Autoscaler (VPA).
+# 	•	Use Case: When you need to optimize resource utilization by adjusting the resources assigned to pods based on their actual usage.
+# 	•	Mechanism: VPA automatically adjusts the CPU and memory requests and limits for containers in a pod based on actual usage.
+
+# Azure Services for Scaling
+
+# Horizontal Scaling:
+
+# 	•	Azure Kubernetes Service (AKS): Supports HPA natively, allowing you to automatically scale the number of pod replicas based on metrics.
+# 	•	Azure Monitor: Can be used to provide metrics for HPA.
+
+# Vertical Scaling:
+
+# 	•	Azure Kubernetes Service (AKS): Supports VPA for adjusting resource requests and limits of pods.
+# 	•	Azure Monitor: Provides metrics that can be used by VPA for scaling decisions.
+
+# Azure AKS Integration
+
+# Horizontal Scaling: AKS supports HPA out of the box. You can use Azure Monitor to provide the necessary metrics.
+
+# Vertical Scaling: AKS also supports VPA. Ensure the VPA components are installed, and use Azure Monitor to collect and provide metrics for scaling.
+
+# Horizontal Pod Autoscaler (HPA) Metrics
+
+# 	1.	CPU Utilization: Monitors the CPU usage of the pods.
+# 	2.	Memory Utilization: Monitors the memory usage of the pods.
+# 	3.	Custom Metrics: Monitors custom metrics provided by your application. These can be any metrics exposed by your application, such as request count, error rate, etc.
+# 	4.	External Metrics: Monitors metrics external to the cluster. These can be metrics from external sources like cloud provider metrics, custom monitoring solutions, etc.
+
+# Vertical Pod Autoscaler (VPA) Metrics
+
+# 	1.	CPU Usage: Adjusts the CPU requests and limits based on actual CPU usage.
+# 	2.	Memory Usage: Adjusts the memory requests and limits based on actual memory usage.
+
+# VPA primarily focuses on CPU and memory usage metrics to adjust the resource requests and limits.
+
+
+# Summary
+Summary
+	•	Horizontal Scaling: Adding more pods to distribute load. Managed by HPA.
+	•	Vertical Scaling: Adjusting resource requests and limits of existing pods. Managed by VPA.
+	•	Azure Integration: AKS supports both HPA and VPA. Azure Monitor provides the necessary metrics for scaling.
+
+HPA provides more flexibility with a variety of metrics including custom and external metrics, making it suitable for various scaling needs based on different types of application performance indicators. VPA focuses on adjusting resource requests based on CPU and memory usage to optimize pod resource allocation.
+# 	•	HPA Metrics:
+# 	•	CPU Utilization
+# 	•	Memory Utilization
+# 	•	Custom Metrics (e.g., application-specific metrics)
+# 	•	External Metrics (e.g., metrics from outside the Kubernetes cluster)
+# 	•	VPA Metrics:
+# 	•	CPU Usage
+# 	•	Memory Usage
+
+# HPA provides more flexibility with a variety of metrics including custom and external metrics, making it suitable for various scaling needs based on different types of application performance indicators. VPA focuses on adjusting resource requests based on CPU and memory usage to optimize pod resource allocation.

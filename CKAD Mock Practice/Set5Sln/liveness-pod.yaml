@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+ name: liveness-pod
+ namespace: dev-environment
+spec:
+ containers:
+ - name: livcontainer
+   image: nginx
+   resources:
+    limits:
+     cpu: "100m"
+     memory: "200Mi"
+   livenessProbe:
+    httpGet:
+     path: /healthz
+     port: 80
+    initialDelaySeconds: 3
+    periodSeconds: 3
